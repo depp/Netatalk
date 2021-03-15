@@ -53,7 +53,7 @@ char *strchr (), *strrchr ();
 #include <atalk/util.h>
 #include <atalk/uam.h>
 
-static C_Block			seskey;
+static DES_cblock			seskey;
 static Key_schedule		seskeysched;
 
 static char		realm[ REALM_SZ ];
@@ -180,8 +180,8 @@ static int krb4_login(void *obj, struct passwd **uam_pwd,
 	    LOG(log_info, logtype_default, "krb4_login: %s.%s@%s", ad.pname, ad.pinst, 
 		ad.prealm );
 	    strcpy( realm, ad.prealm );
-	    memcpy( seskey, ad.session, sizeof( C_Block ) );
-	    key_sched( (C_Block *)seskey, seskeysched );
+	    memcpy( seskey, ad.session, sizeof( DES_cblock ) );
+	    key_sched( (DES_cblock *)seskey, seskeysched );
 
 	    strncpy( username, ad.pname, ulen );
 
@@ -288,7 +288,7 @@ static int krb4_logincont(void *obj, struct passwd **uam_pwd,
 	    memcpy( p, &aint, sizeof( int ) );
 	    p += sizeof( int );
 	    memcpy( p, ibuf, len );
-	    pcbc_encrypt( (C_Block *)p, (C_Block *)p, len, seskeysched,
+	    pcbc_encrypt( (DES_cblock *)p, (DES_cblock *)p, len, seskeysched,
 		seskey, DECRYPT );
 	    p += len;
 	    ibuf += len;
@@ -304,7 +304,7 @@ static int krb4_logincont(void *obj, struct passwd **uam_pwd,
 	    }
 	    memcpy( &ct, ibuf, len );
 
-	    pcbc_encrypt( (C_Block *)&ct, (C_Block *)&ct, len, 
+	    pcbc_encrypt( (DES_cblock *)&ct, (DES_cblock *)&ct, len, 
 		seskeysched, seskey, DECRYPT );
 
 	    aint = sizeof( struct ClearToken );
@@ -376,8 +376,8 @@ static int krb4_logincont(void *obj, struct passwd **uam_pwd,
 		    LOG(log_info, logtype_default, "krb4_login: %s.%s@%s", ad.pname, 
 			ad.pinst, ad.prealm );
 		    memcpy(realm, ad.prealm, sizeof(realm));
-		    memcpy(seskey, ad.session, sizeof( C_Block ));
-		    key_sched((C_Block *) seskey, seskeysched );
+		    memcpy(seskey, ad.session, sizeof( DES_cblock ));
+		    key_sched((DES_cblock *) seskey, seskeysched );
 
 		    strncpy(username, ad.pname, ulen);
 
@@ -409,7 +409,7 @@ static int krb4_logincont(void *obj, struct passwd **uam_pwd,
 		    p += sizeof( len );
 		    memcpy( &cr, p, len );
 
-		    pcbc_encrypt((C_Block *)&cr, (C_Block *)&cr, len, 
+		    pcbc_encrypt((DES_cblock *)&cr, (DES_cblock *)&cr, len, 
 			seskeysched, seskey, DES_DECRYPT );
 
 		    p = buf;
@@ -631,8 +631,8 @@ static int afskrb_login(void *obj, struct passwd *uam_pwd,
 	    return ( AFPERR_BADUAM );
 	}
 
-	memcpy( seskey, cr.session, sizeof( C_Block ));
-	key_sched((C_Block *) seskey, seskeysched );
+	memcpy( seskey, cr.session, sizeof( DES_cblock ));
+	key_sched((DES_cblock *) seskey, seskeysched );
 	validseskey = 1;
 	strncpy(username, name, ulen);
 
@@ -692,7 +692,7 @@ static int afskrb_logincont(void *obj, struct passwd *uam_pwd,
     clen = ntohs( clen );
     ibuf += sizeof( short );
 
-    pcbc_encrypt((C_Block *)ibuf, (C_Block *)ibuf,
+    pcbc_encrypt((DES_cblock *)ibuf, (DES_cblock *)ibuf,
 	    clen, seskeysched, seskey, DES_DECRYPT );
     if ( kuam_set_in_tkt( name, instance, realm, TICKET_GRANTING_TICKET,
 	    realm, ibuf ) != INTK_OK ) {

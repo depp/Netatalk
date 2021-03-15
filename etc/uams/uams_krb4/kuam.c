@@ -156,7 +156,7 @@ kuam_set_in_tkt( user, instance, realm, service, sinstance, ptr)
     struct timeval	t_local;
     int			lifetime, kvno, kerror;
     int32_t		kdc_time;
-    C_Block		ses;
+    DES_cblock		ses;
     char		s_name[ SNAME_SZ ], s_instance[ INST_SZ ];
     char		rlm[ REALM_SZ ];
 

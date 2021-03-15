@@ -219,7 +219,7 @@ int afp_setdiracl(AFPObj *obj, char *ibuf, size_t ibuflen, char *rbuf, size_t *r
 #include <afs/kauth.h>
 #include <afs/kautils.h>
 
-extern C_Block		seskey;
+extern DES_cblock		seskey;
 extern Key_schedule	seskeysched;
 
 int afp_afschangepw(AFPObj *obj, char *ibuf, size_t ibuflen, char *rbuf, size_t *rbuflen)
@@ -259,7 +259,7 @@ int afp_afschangepw(AFPObj *obj, char *ibuf, size_t ibuflen, char *rbuf, size_t 
     }
 
     ibuf += sizeof( short );
-    pcbc_encrypt((C_Block *)ibuf, (C_Block *)ibuf,
+    pcbc_encrypt((DES_cblock *)ibuf, (DES_cblock *)ibuf,
                  clen, seskeysched, seskey, DES_DECRYPT );
 
     len = (unsigned char) *ibuf++;
